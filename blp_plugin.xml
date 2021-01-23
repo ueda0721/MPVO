@@ -1,0 +1,7 @@
+<library path="lib/libmpvo_local_planner">
+  <class name="mpvo_local_planner/MPVOPlannerROS" type="mpvo_local_planner::MPVOPlannerROS" base_class_type="nav_core::BaseLocalPlanner">
+    <description>
+      A implementation of a local planner using either a MPVO approach based on configuration parameters.
+    </description>
+  </class>
+</library>
