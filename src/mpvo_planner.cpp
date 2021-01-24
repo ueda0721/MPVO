@@ -429,6 +429,8 @@ namespace mpvo_local_planner {
 
     //障害物
     int k; //障害物の個数
+/*
+    //障害物2個
     double po_x[] = {2.0 - 0.1 * t, 0.0}; //位置x[m]
     double po_y[] = {0.0, 2.0 - 0.15 * t}; //位置y[m]
     double v_ob[] = {-0.1, -0.15}; //速度[m/s]
@@ -437,7 +439,16 @@ namespace mpvo_local_planner {
     double c1[] = {Rr + Ro, Rr + Ro};
     double c2[] = {-(Rr + Ro), -(Rr + Ro)};
     double c;
-
+*/
+    //障害物3個
+    double po_x[] = {-1.0, 0.0, 1.0}; //位置x[m]
+    double po_y[] = {2.0 - 0.15 * t, -2.0 + 0.15 * t, 2.0 - 0.1 * t}; //位置y[m]
+    double v_ob[] = {-0.15, 0.15, -0.1}; //速度[m/s]
+    double a_o[] = {1.0, 1.0, 1.0}; //ax+by=c
+    double b_o[] = {0.0, 0.0, 0.0};
+    double c1[] = {-1 + Rr + Ro, Rr + Ro, 1 + Rr + Ro};
+    double c2[] = {-1 -(Rr + Ro), -(Rr + Ro), 1 -(Rr + Ro)};
+    double c;
     //ロボット
     double a_r, b_r; //直線軌道のときの傾きと切片
     double Rtrj; //円軌道の半径
@@ -459,8 +470,15 @@ namespace mpvo_local_planner {
     bool judge; //trueのとき、その(v,w)の組は有効
     int flag = 0;
     double min; //ゴールまでの距離の最小値
+/*
+    //障害物2個
     double T_lon = 6.0; //制限時間
     double T_lout = 5.0; //制限時間
+*/
+    //障害物3個
+    double T_lon = 6.0; //制限時間
+    double T_lout = 9.0; //制限時間
+
     double T_lg = 0.5; //ゴール直前の制限時間
 
     /*****************
@@ -468,9 +486,9 @@ namespace mpvo_local_planner {
     *****************/
     for(m = 0; m < 5; m++){
       for(n = 0; n < 5; n++){
-        for(k = 0; k < 2; k++){
+        for(k = 0; k < 3; k++){
         /********************ロボットの現在位置が障害物の軌道上にあるとき********************/
-          if((c2[k] <= a_o[k]*pr_x + b_o[k]*pr_y) && (a_o[k]*pr_x + b_o[k]*pr_y <= c1[k]) && ((a_o[k]==0.0 && pr_x <= po_x[k]) || (b_o[k]==0.0 && pr_y <= po_y[k]))){
+          if((c2[k] <= a_o[k]*pr_x + b_o[k]*pr_y) && (a_o[k]*pr_x + b_o[k]*pr_y <= c1[k]) && ((a_o[k]==0.0 && pr_x <= po_x[k]) || (b_o[k]==0.0 && v_ob[k] < 0.0 && pr_y <= po_y[k]) || (b_o[k]==0.0 && v_ob[k] > 0.0 && pr_y >= po_y[k]))){
           /***************直線軌道のとき***************/
             if(w[n] == 0.0){
               //ロボット軌道y=ax+b
@@ -504,7 +522,7 @@ namespace mpvo_local_planner {
                 //交点までの到達時間
                 t_c = dis / v[m];
                 //有限時間より小さいかつ交点が障害物位置より手前にあるときtrue
-                if((t_c < T_lon) && ((a_o[k]==0.0 && p1_x < po_x[k]) || (b_o[k]==0.0 && p1_y < po_y[k]))){
+                if((t_c < T_lon) && ((a_o[k]==0.0 && p1_x < po_x[k]) || (b_o[k]==0.0 && v_ob[k] < 0.0 && p1_y < po_y[k]) || (b_o[k]==0.0 && v_ob[k] > 0.0 && p1_y > po_y[k]))){
                   judge = true;
                 }else{
                   judge = false;
@@ -582,10 +600,8 @@ namespace mpvo_local_planner {
                 }
                 //交点までの時間
                 t_c = delta / abs(w[n]);
-                cout << "delta=" << delta << endl;
-                cout << "t_c=" << t_c << endl;
                 //有限時間より小さいかつ交点が障害物位置より手前にあるときtrue
-                if((t_c < T_lon) && ((a_o[k]==0.0 && p1_x < po_x[k]) || (b_o[k]==0.0 && p1_y < po_y[k]))){
+                if((t_c < T_lon) && ((a_o[k]==0.0 && p1_x < po_x[k]) || (b_o[k]==0.0 && v_ob[k] < 0.0 && p1_y < po_y[k]) || (b_o[k]==0.0 && v_ob[k] > 0.0 && p1_y > po_y[k]))){
                   judge = true;
                 }else{
                   judge = false;
@@ -636,7 +652,7 @@ namespace mpvo_local_planner {
                   dis = sqrt(pow((p1_x - pr_x), 2) + pow((p1_y - pr_y), 2));
                   t_c = dis / v[m];
                   //有限時間より大きいまたは交点が障害物位置より先にあるときtrue
-                  if((t_c > T_lout) || ((a_o[k]==0.0 && p1_x > po_x[k]) || (b_o[k]==0.0 && p1_y > po_y[k]))){
+                  if((t_c > T_lout) || ((a_o[k]==0.0 && p1_x > po_x[k]) || (b_o[k]==0.0 && v_ob[k] < 0.0 && p1_y > po_y[k]) || (b_o[k]==0.0 && v_ob[k] > 0.0 && p1_y < po_y[k]))){
                     judge = true;
                   }else{
                     judge = false;
@@ -734,7 +750,7 @@ namespace mpvo_local_planner {
                   //交点までの時間
                   t_c = delta / abs(w[n]);
                   //有限時間より大きいまたは交点が障害物位置より先にあるときtrue
-                  if((t_c > T_lout) || ((a_o[k]==0.0 && p1_x > po_x[k]) || (b_o[k]==0.0 && p1_y > po_y[k]))){
+                  if((t_c > T_lout) || ((a_o[k]==0.0 && p1_x > po_x[k]) || (b_o[k]==0.0 && v_ob[k] < 0.0 && p1_y > po_y[k]) || (b_o[k]==0.0 && v_ob[k] > 0.0 && p1_y < po_y[k]))){
                     judge = true;
                   }else{
                     judge = false;
