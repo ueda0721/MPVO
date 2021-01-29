@@ -120,6 +120,10 @@ namespace mpvo_local_planner {
 
       base_local_planner::OdometryHelperRos odom_helper_;
       std::string odom_topic_;
+
+      double px_last = -2.0;
+      double py_last = 0.0;
+      double path_length = 0.0;
   };
 };
 #endif

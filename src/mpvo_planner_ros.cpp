@@ -183,35 +183,43 @@ namespace mpvo_local_planner {
     */
 
     /********************voによる速度決定********************/
-        double px = 0.0; //現在位置x
-        double py = 0.0; //現在位置y
-        double res_th = 0.0; //ロボットの向き
-        double res_v = 0.0; //速度応答値
-        double res_w = 0.0; //角速度応答値
-        double cmd_v = 0.0; //速度指令値
-        double cmd_w = 0.0; //角速度
-        //応答値
-        Eigen::Vector3f pos(global_pose.pose.position.x, global_pose.pose.position.y, tf2::getYaw(global_pose.pose.orientation));
-        Eigen::Vector3f vel(robot_vel.pose.position.x, robot_vel.pose.position.y, tf2::getYaw(robot_vel.pose.orientation));
-        px = global_pose.pose.position.x;
-        py = global_pose.pose.position.y;
-        res_th = tf2::getYaw(global_pose.pose.orientation);
-        res_v = robot_vel.pose.position.x;
-        res_w = tf2::getYaw(robot_vel.pose.orientation);
-        cout << "px=" << px << endl;
-        cout << "py=" << py << endl;
-        cout << "res_th=" << res_th << endl;
-        cout << "res_v=" << res_v << endl;
-        cout << "res_w=" << res_w << endl;
-        //指令値
-        MPVOPlanner::cmdVelocity(px, py, res_th, res_v, res_w, cmd_v, cmd_w); //速度指令値生成
-        cout << "cmd_v=" << cmd_v << endl;
-        cout << "cmd_w=" << cmd_w << endl;
+    double px = 0.0; //現在位置x
+    double py = 0.0; //現在位置y
+    double res_th = 0.0; //ロボットの向き
+    double res_v = 0.0; //速度応答値
+    double res_w = 0.0; //角速度応答値
+    double cmd_v = 0.0; //速度指令値
+    double cmd_w = 0.0; //角速度
+    //応答値
+    Eigen::Vector3f pos(global_pose.pose.position.x, global_pose.pose.position.y, tf2::getYaw(global_pose.pose.orientation));
+    Eigen::Vector3f vel(robot_vel.pose.position.x, robot_vel.pose.position.y, tf2::getYaw(robot_vel.pose.orientation));
+    px = global_pose.pose.position.x;
+    py = global_pose.pose.position.y;
+    res_th = tf2::getYaw(global_pose.pose.orientation);
+    res_v = robot_vel.pose.position.x;
+    res_w = tf2::getYaw(robot_vel.pose.orientation);
+    cout << "px=" << px << endl;
+    cout << "py=" << py << endl;
+    cout << "res_th=" << res_th << endl;
+    cout << "res_v=" << res_v << endl;
+    cout << "res_w=" << res_w << endl;
 
-        //pass along drive commands
-        cmd_vel.linear.x = cmd_v; //並進速度
-        cmd_vel.linear.y = 0.0; //全方向ロボットの場合のみ与える
-        cmd_vel.angular.z = cmd_w; //角速度
+    cout << "px_last=" << px_last << endl;
+    cout << "py_last=" << py_last << endl;
+    path_length += sqrt(pow((px - px_last), 2) + pow((py - py_last), 2));
+    cout << "path_length=" << path_length << endl;
+    px_last = global_pose.pose.position.x;
+    py_last = global_pose.pose.position.y;
+
+    //指令値
+    MPVOPlanner::cmdVelocity(px, py, res_th, res_v, res_w, cmd_v, cmd_w); //速度指令値生成
+    cout << "cmd_v=" << cmd_v << endl;
+    cout << "cmd_w=" << cmd_w << endl;
+
+    //pass along drive commands
+    cmd_vel.linear.x = cmd_v; //並進速度
+    cmd_vel.linear.y = 0.0; //全方向ロボットの場合のみ与える
+    cmd_vel.angular.z = cmd_w; //角速度
     /************************************************************/
 
 

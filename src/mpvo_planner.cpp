@@ -589,11 +589,7 @@ namespace mpvo_local_planner {
                 rp1_y = -pr_y - p1_x * sin(theta_ro) + p1_y * cos(theta_ro);
                 //なす角度を求める
                 dY = rp1_x;
-                if(Rtrj >= abs(rp1_x)){
-                  dX = Rtrj - abs(rp1_x);
-                }else{
-                  dX = -1 * (abs(rp1_x) - Rtrj);
-                }
+                dX = Rtrj - abs(rp1_y);
                 delta = atan2(dY, dX);
                 if(delta < 0.0){
                   delta += 2 * PI;
@@ -738,11 +734,7 @@ namespace mpvo_local_planner {
                   rp1_y = -pr_y - p1_x * sin(theta_ro) + p1_y * cos(theta_ro);
                   //なす角度を求める
                   dY = rp1_x;
-                  if(Rtrj >= abs(rp1_x)){
-                    dX = Rtrj - abs(rp1_x);
-                  }else{
-                    dX = -1 * (abs(rp1_x) - Rtrj);
-                  }
+                  dX = Rtrj - abs(rp1_y);
                   delta = atan2(dY, dX);
                   if(delta < 0.0){
                     delta += 2 * PI;
@@ -820,7 +812,7 @@ namespace mpvo_local_planner {
             cmd_w = w[n];
 					}else if((min == sqrt(pow((pg_x - X_w), 2) + pow((pg_y - Y_w), 2))) && (flag == 1) && (v[m] > cmd_v)){
             min = sqrt(pow((pg_x - X_w), 2) + pow((pg_y - Y_w), 2));
-						 cmd_v = v[m];
+						cmd_v = v[m];
             cmd_w = w[n];
           }
 
