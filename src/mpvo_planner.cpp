@@ -428,7 +428,7 @@ namespace mpvo_local_planner {
     cout << "t=" << t << endl;
 
     //障害物
-    int k; //障害物の個数
+    int k; //k番目の障害物
 /*
     //障害物1個
     double po_x[] = {2.0 - 0.1 * t}; //位置x[m]
@@ -439,7 +439,7 @@ namespace mpvo_local_planner {
     double c1[] = {Rr + Ro};
     double c2[] = {-(Rr + Ro)};
     double c;
-*/
+
     //障害物2個
     double po_x[] = {2.0 - 0.1 * t, 0.0}; //位置x[m]
     double po_y[] = {0.0, 2.0 - 0.15 * t}; //位置y[m]
@@ -449,7 +449,7 @@ namespace mpvo_local_planner {
     double c1[] = {Rr + Ro, Rr + Ro};
     double c2[] = {-(Rr + Ro), -(Rr + Ro)};
     double c;
-/*
+*/
     //障害物3個
     double po_x[] = {-1.0, 0.0, 1.0}; //位置x[m]
     double po_y[] = {2.0 - 0.15 * t, -2.0 + 0.15 * t, 2.0 - 0.1 * t}; //位置y[m]
@@ -459,7 +459,7 @@ namespace mpvo_local_planner {
     double c1[] = {-1 + Rr + Ro, Rr + Ro, 1 + Rr + Ro};
     double c2[] = {-1 -(Rr + Ro), -(Rr + Ro), 1 -(Rr + Ro)};
     double c;
-*/
+
     //ロボット
     double a_r, b_r; //直線軌道のときの傾きと切片
     double Rtrj; //円軌道の半径
@@ -486,15 +486,15 @@ namespace mpvo_local_planner {
     //障害物1個
     double T_lon = 6.5; //制限時間
     double T_lout = 5.0; //制限時間
-*/
+
     //障害物2個
     double T_lon = 6.0; //制限時間
     double T_lout = 5.0; //制限時間
-/*
+*/
     //障害物3個
     double T_lon = 6.0; //制限時間
     double T_lout = 9.0; //制限時間
-*/
+
     double T_lg = 0.5; //ゴール直前の制限時間
 
     /*****************
@@ -502,7 +502,7 @@ namespace mpvo_local_planner {
     *****************/
     for(m = 0; m < 5; m++){
       for(n = 0; n < 5; n++){
-        for(k = 0; k < 2; k++){
+        for(k = 0; k < 3; k++){
         /********************ロボットの現在位置が障害物の軌道上にあるとき********************/
           if((c2[k] <= a_o[k]*pr_x + b_o[k]*pr_y) && (a_o[k]*pr_x + b_o[k]*pr_y <= c1[k]) && ((a_o[k]==0.0 && pr_x <= po_x[k]) || (b_o[k]==0.0 && v_ob[k] < 0.0 && pr_y <= po_y[k]) || (b_o[k]==0.0 && v_ob[k] > 0.0 && pr_y >= po_y[k]))){
           /***************直線軌道のとき***************/
